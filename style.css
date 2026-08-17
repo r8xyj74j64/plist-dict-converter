@@ -1,0 +1,125 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #7a8cea 0%, #8b6ab2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* カードUIをより上品に */
+.container {
+  background: white;
+  border-radius: 14px;
+  padding: 40px 32px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 28px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* ファイル選択 */
+.file-input-wrapper {
+  margin-bottom: 26px;
+}
+
+.file-input-wrapper label {
+  display: block;
+  margin-bottom: 10px;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+input[type="file"] {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="file"]:hover {
+  border-color: #667eea;
+}
+
+input[type="file"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+/* ボタン */
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+button {
+  flex: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.35);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* スマホ対応 */
+@media (max-width: 600px) {
+  .container {
+    padding: 32px 22px;
+  }
+
+  h1 {
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
