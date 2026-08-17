@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>plist → CSV / Gboard辞書変換</title>
+</head>
+<body>
+<h1>plist辞書変換ツール</h1>
+
+<input type="file" id="plistFile">
+<br><br>
+
+<button onclick="convertCSV()">CSVに変換</button>
+<button onclick="convertGboard()">Gboard形式に変換</button>
+
+<script src="https://cdn.jsdelivr.net/npm/plist@3.0.5/dist/plist.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
