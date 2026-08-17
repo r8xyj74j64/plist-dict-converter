@@ -1,7 +1,7 @@
 # plist-dict-converter
 
 iOSユーザー辞書（.plist）を **CSV形式** または **Gboard辞書形式（dictionary.txt）** に変換する Webアプリです。  
-ブラウザだけで動作し、GitHub Pages 上で公開できます。
+ブラウザだけで動作します
 
 ## ✨ 機能
 
