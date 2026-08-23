@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>plist → CSV / Gboard辞書変換</title>
+<link rel="icon" type="image/png" href="icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,16 +15,13 @@
     <label for="plistFile">ファイルをアップロード</label>
     <input type="file" id="plistFile" accept=".plist">
   </div>
-
   <div class="button-group">
     <button onclick="convertCSV()">CSVに変換</button>
     <button onclick="convertGboard()">Gboardに変換</button>
   </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/plist@3.0.5/dist/plist.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="script.js"></script>
-
 </body>
 </html>
