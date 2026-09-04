@@ -1,25 +1,25 @@
 # plist-dict-converter
 
-iOSユーザー辞書（.plist）を **CSV形式** または **Gboard辞書形式（dictionary.txt）** に変換する Webアプリです。  
-ブラウザだけで動作します
+iOSユーザー辞書（.plist）・CSV・Gboard辞書形式（dictionary.txt）を
+**相互に変換**できるWebアプリです。
+ブラウザだけで動作します。
 
 ## ✨ 機能
 
-- `.plist` ファイルを読み込み
-- `phrase`（単語）と `shortcut`（よみ）を抽出
-- **CSV形式** に変換してダウンロード
-- **Gboard辞書形式（dictionary.txt）** に変換
+- `.plist` / `.csv` / `.txt`（Gboard辞書）のいずれかを読み込み
+- ファイル拡張子から入力形式を自動判定
+- `shortcut`（よみ）と `phrase`（単語）を抽出
+- 出力形式を選んで **plist・CSV・Gboard辞書のどれにでも変換可能**
 - Gboard形式は ZIP にまとめてダウンロード
 - すべてブラウザ内で処理（サーバー不要）
 
-## 📁 対応形式
+## 📁 対応形式（すべて相互変換可能）
 
-### 入力
-- iOSユーザー辞書（`.plist`）
-
-### 出力
-- CSV（`shortcut,phrase`）
-- Gboard辞書形式（`dictionary.txt` を含む ZIP）
+| 形式 | 入力 | 出力 |
+|---|---|---|
+| iOSユーザー辞書（`.plist`） | ✅ | ✅ |
+| CSV（`shortcut,phrase`） | ✅ | ✅ |
+| Gboard辞書形式（`dictionary.txt` を含む ZIP） | ✅（`.txt`単体） | ✅（ZIP） |
 
 ## 🛠 使用ライブラリ
 
@@ -28,13 +28,14 @@ iOSユーザー辞書（.plist）を **CSV形式** または **Gboard辞書形�
 
 ## 🚀 使い方
 
-1. Webページを開く  
-2. `.plist` ファイルを選択  
-3. 「CSVに変換」または「Gboard形式に変換」をクリック  
-4. 出力ファイルをダウンロード
+1. Webページを開く
+2. 変換したいファイル（`.plist` / `.csv` / `.txt`）を選択
+3. 検出された入力形式が表示される
+4. 変換後の形式（plist / CSV / Gboard）を選択
+5. 「変換してダウンロード」をクリック
+6. 出力ファイルをダウンロード
 
 ## 📄 ライセンス
 
-このプロジェクトは **MIT License** のもとで公開されています。  
+このプロジェクトは **MIT License** のもとで公開されています。
 自由に利用・改変・再配布できますが、著作権表示は保持してください。
-

@@ -11,6 +11,22 @@ function detectTypeFromName(filename) {
     return null;
 }
 
+/* ZIP内から最初に見つかった対応ファイルを取り出す */
+async function extractFromZip(file) {
+    const zip = await JSZip.loadAsync(file);
+
+    const candidates = Object.values(zip.files)
+        .filter(entry => !entry.dir && detectTypeFromName(entry.name));
+
+    if (candidates.length === 0) {
+        throw new Error("ZIP内に対応するファイル（.plist / .csv / .txt）が見つかりませんでした");
+    }
+
+    const entry = candidates[0];
+    const text = await entry.async("string");
+    return { innerName: entry.name, type: detectTypeFromName(entry.name), text };
+}
+
 /* ---------------- パース処理 ---------------- */
 
 function parsePlistText(text) {
@@ -157,17 +173,40 @@ function buildGboardText(records) {
 
 /* ---------------- ファイル入出力 ---------------- */
 
-function readSelectedFile() {
+function getSelectedFile() {
     const fileInput = document.getElementById("dictFile");
     const file = fileInput.files[0];
     if (!file) {
         throw new Error("ファイルを選択してください");
     }
+    return file;
+}
+
+/* アップロードされたファイル（zipの場合は中身）から { type, text } を得る */
+async function resolveInputText(file) {
+    const lower = file.name.toLowerCase();
+
+    if (lower.endsWith(".zip")) {
+        const { type, text, innerName } = await extractFromZip(file);
+        return { type, text, sourceName: innerName };
+    }
+
     const type = detectTypeFromName(file.name);
     if (!type) {
-        throw new Error("対応していないファイル形式です（.plist / .csv / .txt のいずれかを選択してください）");
+        throw new Error("対応していないファイル形式です（.plist / .csv / .txt / .zip のいずれかを選択してください）");
     }
-    return { file, type };
+
+    const text = await readFileAsText(file);
+    return { type, text, sourceName: file.name };
+}
+
+function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = () => reject(new Error("ファイルの読み込みに失敗しました"));
+        reader.readAsText(file);
+    });
 }
 
 function download(filename, text) {
@@ -198,12 +237,12 @@ function showError(message) {
 
 /* ---------------- メイン変換処理 ---------------- */
 
-function convert() {
+async function convert() {
     showError("");
 
-    let file, inputType;
+    let file;
     try {
-        ({ file, type: inputType } = readSelectedFile());
+        file = getSelectedFile();
     } catch (err) {
         showError(err.message);
         return;
@@ -211,55 +250,61 @@ function convert() {
 
     const outputType = getSelectedOutputFormat();
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        try {
-            const text = e.target.result;
-            const records = parseByType(inputType, text);
+    try {
+        const { type: inputType, text, sourceName } = await resolveInputText(file);
+        const records = parseByType(inputType, text);
 
-            if (records.length === 0) {
-                showError("辞書エントリが見つかりませんでした。入力ファイルの内容を確認してください。");
-                return;
-            }
-
-            if (outputType === "plist") {
-                const out = buildPlistText(records);
-                download("dictionary.plist", out);
-            } else if (outputType === "csv") {
-                const out = buildCsvText(records);
-                download("dictionary.csv", out);
-            } else if (outputType === "gboard") {
-                const out = buildGboardText(records);
-                const zip = new JSZip();
-                zip.file("dictionary.txt", out);
-                zip.generateAsync({ type: "blob" }).then(content => {
-                    downloadBlob("gboard_dictionary.zip", content);
-                });
-            }
-        } catch (err) {
-            showError("変換中にエラーが発生しました: " + err.message);
+        if (records.length === 0) {
+            showError(`辞書エントリが見つかりませんでした（読み込んだファイル: ${sourceName}）。内容を確認してください。`);
+            return;
         }
-    };
-    reader.onerror = function () {
-        showError("ファイルの読み込みに失敗しました");
-    };
-    reader.readAsText(file);
+
+        if (outputType === "plist") {
+            const out = buildPlistText(records);
+            download("dictionary.plist", out);
+        } else if (outputType === "csv") {
+            const out = buildCsvText(records);
+            download("dictionary.csv", out);
+        } else if (outputType === "gboard") {
+            const out = buildGboardText(records);
+            const zip = new JSZip();
+            zip.file("dictionary.txt", out);
+            const content = await zip.generateAsync({ type: "blob" });
+            downloadBlob("gboard_dictionary.zip", content);
+        }
+    } catch (err) {
+        showError("変換中にエラーが発生しました: " + err.message);
+    }
 }
 
-/* 選択したファイルの形式をリアルタイム表示 */
+/* 選択したファイルの形式をリアルタイム表示（zipの場合は中身を確認） */
 document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("dictFile");
     const detectedTypeEl = document.getElementById("detectedType");
+    const labels = { plist: "plist（iOSユーザー辞書）", csv: "CSV", gboard: "Gboard辞書（txt）" };
 
-    fileInput.addEventListener("change", () => {
+    fileInput.addEventListener("change", async () => {
         showError("");
         const file = fileInput.files[0];
         if (!file) {
             detectedTypeEl.textContent = "";
             return;
         }
+
+        const lower = file.name.toLowerCase();
+        if (lower.endsWith(".zip")) {
+            detectedTypeEl.textContent = "ZIPを確認中...";
+            try {
+                const { type, innerName } = await extractFromZip(file);
+                detectedTypeEl.textContent = `検出した入力形式: ${labels[type]}（ZIP内: ${innerName}）`;
+            } catch (err) {
+                detectedTypeEl.textContent = "";
+                showError(err.message);
+            }
+            return;
+        }
+
         const type = detectTypeFromName(file.name);
-        const labels = { plist: "plist（iOSユーザー辞書）", csv: "CSV", gboard: "Gboard辞書（txt）" };
         detectedTypeEl.textContent = type
             ? `検出した入力形式: ${labels[type]}`
             : "対応していない形式です";
