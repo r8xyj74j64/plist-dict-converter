@@ -3,22 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>plist → CSV / Gboard辞書変換</title>
+<title>plist / CSV / Gboard 辞書相互変換</title>
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-  <h1>辞書ファイル変換ツール</h1>
-  
+  <h1>辞書ファイル相互変換ツール</h1>
+
   <div class="file-input-wrapper">
-    <label for="plistFile">.plistをアップロード</label>
-    <input type="file" id="plistFile" accept=".plist">
+    <label for="dictFile">ファイルをアップロード（.plist / .csv / .txt）</label>
+    <input type="file" id="dictFile" accept=".plist,.csv,.txt">
+    <p id="detectedType" class="detected-type"></p>
   </div>
+
+  <div class="format-select-wrapper">
+    <label>変換後の形式を選択</label>
+    <div class="radio-group">
+      <label class="radio-option">
+        <input type="radio" name="outputFormat" value="plist" checked>
+        plist（iOSユーザー辞書）
+      </label>
+      <label class="radio-option">
+        <input type="radio" name="outputFormat" value="csv">
+        CSV
+      </label>
+      <label class="radio-option">
+        <input type="radio" name="outputFormat" value="gboard">
+        Gboard辞書（ZIP）
+      </label>
+    </div>
+  </div>
+
   <div class="button-group">
-    <button onclick="convertCSV()">CSVに変換</button>
-    <button onclick="convertGboard()">Gboardに変換</button>
+    <button onclick="convert()">変換してダウンロード</button>
   </div>
+
+  <p id="errorMsg" class="error-msg"></p>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/plist@3.0.5/dist/plist.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
